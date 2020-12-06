@@ -16,6 +16,7 @@ const HEALTHCHECK_PATH: string = process.env.GATEWAY_HEALTHCHECK_PATH || '/x-gat
 const CONFIG_FILE_PATH: string = process.env.GATEWAY_NODE_CONFIG_FILE_PATH as string;
 
 const app: express.Application = express();
+app.disable('etag');
 
 const beforeMiddlewareList: Array<BeforeMiddleware> = [];
 if (beforeMiddlewareList.length > 0) {
@@ -24,8 +25,8 @@ if (beforeMiddlewareList.length > 0) {
 
 const rawConfigData: object = JSON.parse(fs.readFileSync(CONFIG_FILE_PATH, 'utf8') as string);
 
-const proxyServerSettingsList: Array<ProxyServerSettings> = rawConfigData['servers'];
-const proxyPathSettingsList: Array<ProxyPathSettings> = rawConfigData['paths'];
+const proxyServerSettingsList: Array<ProxyServerSettings> = rawConfigData['servers'].reverse();
+const proxyPathSettingsList: Array<ProxyPathSettings> = rawConfigData['paths'].reverse();
 const proxyServerMap: Map<string, HttpProxy> = new Map();
 
 proxyServerSettingsList.forEach((settings: ProxyServerSettings): void => {
@@ -64,6 +65,13 @@ proxyPathSettingsList.forEach((settings: ProxyPathSettings): void => {
 app.get(HEALTHCHECK_PATH, (_: express.Request, res: express.Response): void => {
   res.json({});
 })
+
+// Fallback for all 404 routes
+app.get('*', (_: express.Request, res: express.Response): void => {
+  res.status(404).json({
+    error: 'gateway does not have this path mapping'
+  });
+});
 
 app.listen(PORT, () => {
   if (isDevelopment()) {

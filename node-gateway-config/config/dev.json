@@ -21,6 +21,26 @@
       "serviceName": "test-service-2",
       "path": "/test-path-2",
       "methods": ["get"]
+    },
+    {
+      "serviceName": "test-service-1",
+      "path": "/test-resource-1/*",
+      "methods": ["get"]
+    },
+    {
+      "serviceName": "test-service-1",
+      "path": "/conflict-path",
+      "methods": ["get"]
+    },
+    {
+      "serviceName": "test-service-2",
+      "path": "/conflict-path",
+      "methods": ["get"]
+    },
+    {
+      "serviceName": "test-service-1",
+      "path": "/post-path",
+      "methods": ["post"]
     }
   ]
 }

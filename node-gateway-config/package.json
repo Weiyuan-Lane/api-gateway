@@ -41,6 +41,6 @@
       "config"
     ],
     "exec": "npm run start:dev",
-    "ext": "ts"
+    "ext": "ts,json"
   }
 }

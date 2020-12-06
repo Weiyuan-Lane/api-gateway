@@ -6,7 +6,13 @@ const serverName = process.env.GATEWAY_TEST_SVC_1_NAME;
 
 const config = {
   get: [
-    { path: '/test-path-1' }
+    { path: '/test-path-1' },
+    { path: '/conflict-path' },
+    { path: '/test-resource-1/nested-1' },
+    { path: '/test-resource-1/nested-1/nested-2' }
+  ],
+  post: [
+    { path: '/post-path' }
   ]
 }
 
