@@ -6,7 +6,7 @@ services:
       context: ./varnish-config
       dockerfile: Dockerfile.dev
     working_dir: /opt/varnish
-    container_name: varish_accelerator
+    container_name: varnish_accelerator
     volumes:
       - ./varnish-config:/opt/varnish/
     ports:
