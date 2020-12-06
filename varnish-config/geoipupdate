@@ -1,0 +1,8 @@
+#!/bin/sh
+
+ORIGIN_VCL_DIR="/opt/varnish"
+GEOIP_DIR="/opt/geoip"
+GEOIP_OUTPUT="mmdb.tar.gz"
+
+license=`cat $ORIGIN_VCL_DIR/geoiplicense`
+mkdir -p $GEOIP_DIR && cd $GEOIP_DIR && wget "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=$license&suffix=tar.gz" -O $GEOIP_OUTPUT && tar -zxvf $GEOIP_OUTPUT --strip-components=1 && rm $GEOIP_OUTPUT
