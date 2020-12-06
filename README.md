@@ -50,4 +50,3 @@ Nothing special, except that the response is from proxy server `test_server_1`
 ## TODO:
 - Add [hitch](https://github.com/varnish/hitch) as a TLS proxy
 - Refactor `gateway.ts`
-- Add country header

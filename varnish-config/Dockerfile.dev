@@ -1,10 +1,7 @@
-FROM registry.hub.docker.com/library/varnish:6.5.1-1
+FROM registry.hub.docker.com/library/alpine:3.12.1
 
-RUN apt-get update && \
-    apt install -y gettext  && \
-    rm /etc/varnish/default.vcl
+RUN apk add --no-cache varnish gettext
 
 WORKDIR /opt/varnish
-
 
 ENTRYPOINT ["/opt/varnish/run"]

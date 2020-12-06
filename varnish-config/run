@@ -3,6 +3,12 @@
 ORIGIN_VCL_DIR="/opt/varnish"
 DEST_VCL_DIR="/etc/varnish"
 
-envsubst < $ORIGIN_VCL_DIR/varnish.vcl.tmpl > $ORIGIN_VCL_DIR/varnish.vcl.tmp && mv $ORIGIN_VCL_DIR/varnish.vcl.tmp $DEST_VCL_DIR/default.vcl
+envsubst < $ORIGIN_VCL_DIR/varnish.vcl.tmpl > $ORIGIN_VCL_DIR/varnish.vcl.tmp && mv $ORIGIN_VCL_DIR/varnish.vcl.tmp $DEST_VCL_DIR/varnish.vcl
 
-exec docker-varnish-entrypoint
+exec varnishd \
+  -F \
+  -f $DEST_VCL_DIR/varnish.vcl \
+	-a http=:80,HTTP \
+  -a proxy=:8443,PROXY \
+  -p feature=+http2 \
+  -s malloc,$GATEWAY_VARNISH_CACHE_SIZE
