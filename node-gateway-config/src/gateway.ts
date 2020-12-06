@@ -45,7 +45,12 @@ proxyServerSettingsList.forEach((settings: ProxyServerSettings): void => {
 });
 
 proxyPathSettingsList.forEach((settings: ProxyPathSettings): void => {
-  const { serviceName, path, methods } = settings;
+  const { 
+    serviceName, 
+    path, 
+    methods,
+    timeout,
+  } = settings;
 
   // If the serviceName doesn't exist, it is abnormal to register it as a proxy
   // Raise error to notify of possible route mismatch
@@ -57,7 +62,13 @@ proxyPathSettingsList.forEach((settings: ProxyPathSettings): void => {
 
   methods.forEach((method: string) => {
     app[method](path, (req: express.Request, res: express.Response): void => {
-      proxy.web(req, res);
+      proxy.web(req, res, {
+        proxyTimeout: timeout || undefined,
+      }, (e: Error) => {
+        if (e && e.message === 'socket hang up') {
+          res.status(504).json({ error: 'Gateway timeout' });
+        }
+      });
     })
   });
 });

@@ -15,32 +15,86 @@
     {
       "serviceName": "test-service-1",
       "path": "/test-path-1",
+      "timeout": 1000,
       "methods": ["get"]
     },
     {
       "serviceName": "test-service-2",
       "path": "/test-path-2",
+      "timeout": 1000,
       "methods": ["get"]
     },
     {
       "serviceName": "test-service-1",
       "path": "/test-resource-1/*",
+      "timeout": 1000,
       "methods": ["get"]
     },
     {
       "serviceName": "test-service-1",
       "path": "/conflict-path",
+      "timeout": 1000,
       "methods": ["get"]
     },
     {
       "serviceName": "test-service-2",
       "path": "/conflict-path",
+      "timeout": 1000,
       "methods": ["get"]
     },
     {
       "serviceName": "test-service-1",
       "path": "/post-path",
+      "timeout": 1000,
       "methods": ["post"]
+    },
+    {
+      "serviceName": "test-service-1",
+      "path": "/timeout-route",
+      "timeout": 1000,
+      "methods": ["get"]
+    },
+    {
+      "serviceName": "test-service-1",
+      "path": "/cached-route",
+      "timeout": 1000,
+      "methods": ["get"]
+    },
+    {
+      "serviceName": "test-service-1",
+      "path": "/cached-route-1",
+      "timeout": 1000,
+      "methods": ["get"]
+    },
+    {
+      "serviceName": "test-service-1",
+      "path": "/cached-route-2",
+      "timeout": 1000,
+      "methods": ["get"]
+    },
+    {
+      "serviceName": "test-service-1",
+      "path": "/grace-mode-route",
+      "timeout": 1000,
+      "methods": ["get"]
+    },
+    {
+      "serviceName": "test-service-1",
+      "path": "/grace-not-needed",
+      "timeout": 1000,
+      "methods": ["get"]
+    },
+    {
+      "serviceName": "test-service-1",
+      "path": "/post-error-path",
+      "timeout": 1000,
+      "methods": ["post"]
+    },
+    {
+      "serviceName": "test-service-1",
+      "path": "/get-error-path",
+      "timeout": 1000,
+      "methods": ["get"]
     }
   ]
 }

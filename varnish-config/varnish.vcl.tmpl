@@ -43,6 +43,7 @@ sub vcl_init {
 
 # Called at the beginning of a request, after the complete request has been
 # received and parsed, after a restart or as the result of an ESI include.
+# Add your config to retrieve cached content here
 sub vcl_recv {
   set req.backend_hint = vdir.backend();
 
@@ -208,7 +209,8 @@ sub vcl_miss {
   return (fetch);
 }
 
-# Handle the HTTP request coming from our backend
+# Handle all the HTTP response coming from our backend
+# Add your config to cache content here
 sub vcl_backend_response {
   # Called after the response headers has been successfully retrieved from the backend.
 
@@ -230,20 +232,28 @@ sub vcl_backend_response {
     set beresp.do_stream = true;
   }
 
-  # Set 2min cache if unset for static files
-  # Important, you shouldn't rely on this, SET YOUR HEADERS in the backend
-  if (beresp.ttl <= 0s || beresp.http.Set-Cookie || beresp.http.Vary == "*") {
-    set beresp.ttl = 120s;
+  # No caching, no grace - straight up
+  if ((bereq.method != "GET" && bereq.method != "HEAD") || beresp.http.Set-Cookie || beresp.http.Vary == "*") {
+    set beresp.grace = 0s;
+    set beresp.ttl = 0s;
     set beresp.uncacheable = true;
     return (deliver);
   }
 
-  # Don't cache 50x responses
-  if (beresp.status >= 500 && beresp.status <= 599) {
+  # If response status is 5xx, and there is a background thread fetching
+  # the response, do not cache the response
+  if (beresp.status >= 500 && bereq.is_bgfetch) {
     return (abandon);
   }
 
-  # Allow stale content, in case the backend goes down.
+  # Set ttl to 0 instead of default 120s, if the appropriate settings is 
+  # not there
+  if (!(beresp.http.Cache-Control && beresp.http.Cache-Control ~ "max-age")) {
+    set beresp.ttl = 0s;
+  }
+
+  # We have filtered out all of the requests that should not be grace kept
+  # Here we add the fallback grace period
   set beresp.grace = ${GATEWAY_VARNISH_GRACE_PERIOD};
 
   return (deliver);
@@ -252,12 +262,9 @@ sub vcl_backend_response {
 # The routine when we deliver the HTTP request to the user
 # Last chance to modify headers that are sent to the client
 sub vcl_deliver {
-  if (obj.hits > 0) {
-    set resp.http.X-Cache = "HIT";
-  } else {
-    set resp.http.X-Cache = "MISS";
-  }
   set resp.http.X-Cache-Hits = obj.hits;
+  set resp.http.X-Cache-TTL = obj.ttl;
+  set resp.http.X-Cache-Grace = obj.grace;
 
   # Unset common and insecure headers exposing your application versions
   unset resp.http.X-Powered-By;

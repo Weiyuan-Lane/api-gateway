@@ -38,6 +38,7 @@ type ProxyPathSettings = {
   serviceName: string,
   path: string,
   methods: Array<ProxyPathMethod>,
+  timeout: number,
 };
 
 export {

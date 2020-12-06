@@ -22,7 +22,7 @@ services:
       - GATEWAY_NODE_PORT=3000
       - GATEWAY_NODE_PROBE_HOST=node_gateway.local # Should be different from GATEWAY_NODE_HOST to differentiate between an internal request and external request
       - GATEWAY_HEALTHCHECK_PATH=/x-gateway-healthcheck 
-      - GATEWAY_VARNISH_GRACE_PERIOD=6h
+      - GATEWAY_VARNISH_GRACE_PERIOD=1h
       - GATEWAY_VARNISH_CACHE_SIZE=100m
 
   node_gateway:

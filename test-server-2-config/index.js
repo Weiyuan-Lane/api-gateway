@@ -14,14 +14,29 @@ const config = {
 Object.keys(config).forEach((method) => {
   config[method].forEach((pathConfig) => {
     app[method](pathConfig.path, (req, res) => {
-      res.json({
+      if (typeof pathConfig.callCount !== 'number') {
+        pathConfig.callCount = 0;
+      }
+
+      const response = {
         debug: {
           serverName,
           method,
           registeredPath: pathConfig.path,
           actualPath: req.path,
+          ts: (new Date()).toLocaleString(),
         }
-      })
+      };
+
+      if (pathConfig.timeout && pathConfig.callCount >= pathConfig.tries){
+        setTimeout(() => {
+          res.json(response);
+        }, pathConfig.timeout);
+      } else {
+        res.json(response);
+      }
+
+      pathConfig.callCount += 1;
     });
   });
 });
