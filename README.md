@@ -37,8 +37,16 @@ The rendered responses are mapped from a wildcard route in `node-gateway-config/
 The path is configured as `/test-resource-1/*`. Only one path config is required, even if supporting multiple routes to another service
 
 ---
-### #4 - Matching specific routes 
+### #4 - Matching specific routes with previously used resources
 
+This scenario shows the configuration for a route to proxy server 2, whereby the previous resource routing is already used to proxy server 1.
+
+Make a get request to [localhost/test-path-1](http://localhost/test-path-1)
+Make a get request to [localhost/test-path-1/nested-at-2](http://localhost/test-path-1/nested-at-2)
+
+The rendered responses are mapped from a wildcard route in `node-gateway-config/config/dev.json`, to proxy server `test_server_1`
+
+The path is configured as `/test-resource-1/*`. Only one path config is required, even if supporting multiple routes to another service
 
 ----
 ### #5 - Conflict in path settings
@@ -81,6 +89,14 @@ Since the page is cached with 10 seconds and a public cache control header, the 
 ---
 ### #9 - Caching at browser
 
+This scenario shows what happens when the browser caches the responses when intended (private cache control headers returned)
+
+Make a get request to [localhost/cached-route-browser](http://localhost/cached-route-browser)
+
+Make sure you refresh a few times if you're using a browser. The `ts` should not change immediately.
+
+Only when you hard-refresh, does the contents change.
+
 ----
 ### #10 - Grace-ful fallback
 
@@ -88,11 +104,11 @@ This scenario shows the grace mode of the gateway - since we intend for grace th
 
 Make a get request to [localhost/grace-mode-route](http://localhost/grace-mode-route)
 
-Make sure you refresh and hard refresh, and note that the response returns as if it's cached (`ts` does not change), but degrades to a timeout around a minute later.
+Make sure you refresh and hard refresh, and note that the response returns as if it's cached (`ts` does not change), but degrades to a timeout around 1 minute later.
 
 In the proxy server, the first hit is configured to always go through, while the rest will time out, and there are no cache-control headers in the response
 
-As expected, the later entries that are timing out are not visible until 1 minute later. This allows the gateway to return stale entries, even when not cached, for better user experience in dire situations. 
+As expected, the later entries that are timing out are not visible until 1 minute later. This allows the gateway to return stale entries, even when cached TTL is up, for better user experience in dire situations. 
 
 ----
 ### #11 - No grace-ful fallback
@@ -122,7 +138,13 @@ Make a get request to [localhost/get-error-path](http://localhost/get-error-path
 The error response from the backend is returned
 
 ----
-### #13 - Edge side includes
+### #14 - Edge side includes
+
+This scenario covers the use of edge side includes for better caching policites
+
+Make a get request to [localhost/esi-test](http://localhost/esi-test)
+
+Check `extraESIProperty` to get replaced property from `/esi-nested-value`.
 
 ---
 ## TODO:

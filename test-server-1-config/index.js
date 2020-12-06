@@ -12,15 +12,18 @@ const config = {
     { path: '/test-resource-1/nested-1/nested-2' },
     { path: '/timeout-route', timeout: 1000000, tries: 0 },
     { path: '/cached-route', cacheControlHeader: 'public, max-age=10' },
+    { path: '/cached-route-browser', cacheControlHeader: 'private, max-age=10' },
     { path: '/cached-route-1', cacheControlHeader: 'public' },
     { path: '/cached-route-2', cacheControlHeader: 'public, max-age=0' },
-    { path: '/grace-mode-route', timeout: 100000, tries: 1 },
-    { path: '/grace-not-needed' }
+    { path: '/grace-mode-route', timeout: 100000, tries: 1, cacheControlHeader: 'public, max-age=1' },
+    { path: '/grace-not-needed', cacheControlHeader: 'public, max-age=1' }
   ],
   post: [
     { path: '/post-path' }
   ]
 }
+
+app.disable('etag');
 
 app.post('/post-error-path', (req, res) => {
   res.status(500).json({
@@ -44,6 +47,25 @@ app.get('/get-error-path', (req, res) => {
       ts: (new Date()).toLocaleString(),
     }
   });
+});
+
+app.get('/esi-test', (req, res) => {
+  res.setHeader('Surrogate-Control', 'ESI/1.0');
+  res.setHeader('content-type', 'application/json');
+  res.send(`{\
+    "debug": {\
+      "serverName": "${serverName}",\
+      "method": "get",\
+      "registeredPath": "/get-error-path",\
+      "actualPath": "${req.path}",\
+      "ts": "${(new Date()).toLocaleString()}",\
+      "extraESIProperty": "<esi:include src="/esi-nested-value"/>"\
+    }\
+  }`);
+});
+
+app.get('/esi-nested-value', (req, res) => {
+  res.send('super-secret-stuff-from-another-route');
 });
 
 Object.keys(config).forEach((method) => {

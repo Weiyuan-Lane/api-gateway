@@ -11,4 +11,5 @@ exec varnishd \
 	-a http=:80,HTTP \
   -a proxy=:8443,PROXY \
   -p feature=+http2 \
+  -p feature=+esi_disable_xml_check \
   -s malloc,$GATEWAY_VARNISH_CACHE_SIZE

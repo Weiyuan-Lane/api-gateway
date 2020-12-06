@@ -195,12 +195,9 @@ sub vcl_hit {
     return (deliver);
   }
 
-  # Use stale cache entries backend is unhealthy
-  if (!std.healthy(req.backend_hint)) {
-    # Return cached results in the grace period 
-    if (obj.ttl + obj.grace > 0s) {
-      return (deliver);
-    }
+  # Return cached results in the grace period 
+  if (obj.ttl + obj.grace > 0s) {
+    return (deliver);
   }
 }
 
@@ -215,8 +212,8 @@ sub vcl_backend_response {
   # Called after the response headers has been successfully retrieved from the backend.
 
   # Enable ESI if indicated from backend
-  if (beresp.http.Surrogate-Control ~ "ESI/1.0") {
-    unset beresp.http.Surrogate-Control;
+  if (beresp.http.surrogate-control ~ "ESI\/1\.0") {
+    unset beresp.http.surrogate-control;
     set beresp.do_esi = true;
   }
 
@@ -232,24 +229,18 @@ sub vcl_backend_response {
     set beresp.do_stream = true;
   }
 
-  # No caching, no grace - straight up
-  if ((bereq.method != "GET" && bereq.method != "HEAD") || beresp.http.Set-Cookie || beresp.http.Vary == "*") {
-    set beresp.grace = 0s;
-    set beresp.ttl = 0s;
-    set beresp.uncacheable = true;
-    return (deliver);
-  }
-
   # If response status is 5xx, and there is a background thread fetching
   # the response, do not cache the response
   if (beresp.status >= 500 && bereq.is_bgfetch) {
     return (abandon);
   }
 
-  # Set ttl to 0 instead of default 120s, if the appropriate settings is 
-  # not there
-  if (!(beresp.http.Cache-Control && beresp.http.Cache-Control ~ "max-age")) {
+  # No caching, no grace - straight up
+  if ((bereq.method != "GET" && bereq.method != "HEAD") || beresp.ttl <= 0s || beresp.http.Set-Cookie || beresp.http.Vary == "*" || !(beresp.http.Cache-Control && beresp.http.Cache-Control ~ "max-age") || (beresp.http.Cache-Control && beresp.http.Cache-Control ~ "private|no-store")) {
+    set beresp.grace = 0s;
     set beresp.ttl = 0s;
+    set beresp.uncacheable = true;
+    return (deliver);
   }
 
   # We have filtered out all of the requests that should not be grace kept

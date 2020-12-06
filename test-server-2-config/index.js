@@ -7,9 +7,12 @@ const serverName = process.env.GATEWAY_TEST_SVC_2_NAME;
 const config = {
   get: [
     { path: '/test-path-2' },
+    { path: '/test-path-1/nested-at-2' },
     { path: '/conflict-path' },
   ]
 }
+
+app.disable('etag');
 
 Object.keys(config).forEach((method) => {
   config[method].forEach((pathConfig) => {
