@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "paths": {
+      "@utils/*": ["./utils/*"],
+      "@utils": ["./utils"]
+    },
+    "baseUrl": "src",
+    "strictNullChecks": true,
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js",
+    ".eslintrc.js",
+    "config/**/*.js",
+    "tsconfig-paths.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist/**/*"
+  ]
+}

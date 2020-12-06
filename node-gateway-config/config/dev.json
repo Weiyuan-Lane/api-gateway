@@ -1,0 +1,26 @@
+{
+  "servers": [
+    {
+      "serviceName": "test-service-1",
+      "host": "test_server_1",
+      "port": 3001
+    },
+    {
+      "serviceName": "test-service-2",
+      "host": "test_server_2",
+      "port": 3002
+    }
+  ],
+  "paths": [
+    {
+      "serviceName": "test-service-1",
+      "path": "/test-path-1",
+      "methods": ["get"]
+    },
+    {
+      "serviceName": "test-service-2",
+      "path": "/test-path-2",
+      "methods": ["get"]
+    }
+  ]
+}

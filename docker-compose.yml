@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  varish_accelerator:
+    build:
+      context: ./varnish-config
+      dockerfile: Dockerfile.dev
+    working_dir: /opt/varnish
+    container_name: varish_accelerator
+    volumes:
+      - ./varnish-config:/opt/varnish/
+    ports:
+      - "80:80"
+    networks:
+      gateway:
+        ipv4_address: 172.16.255.2
+    extra_hosts:
+      - "node_gateway:172.16.255.3"
+    environment:
+      - GATEWAY_NODE_MAX_CONNECTIONS=300
+      - GATEWAY_NODE_HOST=node_gateway
+      - GATEWAY_NODE_PORT=3000
+      - GATEWAY_NODE_PROBE_HOST=node_gateway.local # Should be different from GATEWAY_NODE_HOST to differentiate between an internal request and external request
+      - GATEWAY_HEALTHCHECK_PATH=/x-gateway-healthcheck 
+      - GATEWAY_VARNISH_GRACE_PERIOD=6h
+
+  node_gateway:
+    image: registry.hub.docker.com/library/node:15.3.0-alpine3.12
+    working_dir: /opt/gateway
+    container_name: node_gateway
+    entrypoint: ["npm"] 
+    command: ["run", "dev"]
+    volumes:
+      - ./node-gateway-config:/opt/gateway/
+    ports:
+      - "3000:3000"
+    networks:
+      gateway:
+        ipv4_address: 172.16.255.3
+    extra_hosts:
+      - "test_server_1:172.16.255.4"
+      - "test_server_2:172.16.255.5"
+    environment:
+      - GATEWAY_NODE_PORT=3000
+      - GATEWAY_HEALTHCHECK_PATH=/x-gateway-healthcheck 
+      - GATEWAY_NODE_CONFIG_FILE_PATH=/opt/gateway/config/dev.json
+
+  test_server_1:
+    image: registry.hub.docker.com/library/node:15.3.0-alpine3.12
+    working_dir: /opt/api
+    container_name: test_server_1
+    entrypoint: ["npm"] 
+    command: ["run", "dev"]
+    volumes:
+      - ./test-server-1-config:/opt/api/
+    ports:
+      - "3001:3001"
+    networks:
+      gateway:
+        ipv4_address: 172.16.255.4
+    environment:
+      - GATEWAY_TEST_SVC_1_PORT=3001
+      - GATEWAY_TEST_SVC_1_NAME=test_server_1
+
+  test_server_2:
+    image: registry.hub.docker.com/library/node:15.3.0-alpine3.12
+    working_dir: /opt/api
+    container_name: test_server_2
+    entrypoint: ["npm"] 
+    command: ["run", "dev"]
+    volumes:
+      - ./test-server-2-config:/opt/api/
+    ports:
+      - "3002:3002"
+    networks:
+      gateway:
+        ipv4_address: 172.16.255.5
+    environment:
+      - GATEWAY_TEST_SVC_2_PORT=3002
+      - GATEWAY_TEST_SVC_2_NAME=test_server_2
+
+networks:
+  gateway:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.255.0/24 

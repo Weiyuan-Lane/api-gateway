@@ -1,0 +1,8 @@
+#!/bin/sh
+
+ORIGIN_VCL_DIR="/opt/varnish"
+DEST_VCL_DIR="/etc/varnish"
+
+envsubst < $ORIGIN_VCL_DIR/varnish.vcl.tmpl > $ORIGIN_VCL_DIR/varnish.vcl.tmp && mv $ORIGIN_VCL_DIR/varnish.vcl.tmp $DEST_VCL_DIR/default.vcl
+
+exec docker-varnish-entrypoint

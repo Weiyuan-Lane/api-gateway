@@ -1,0 +1,26 @@
+{
+  "name": "test-server",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm i && nodemon index.js"
+  },
+  "author": "Weiyuan Liu",
+  "license": "ISC",
+  "dependencies": {
+    "express": "~4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "~2.0.4"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "node_modules"
+    ],
+    "watch": [
+      "index.js"
+    ],
+    "ext": "ts"
+  }
+}
