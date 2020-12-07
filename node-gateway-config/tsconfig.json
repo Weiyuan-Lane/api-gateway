@@ -7,7 +7,9 @@
     "sourceMap": true,
     "paths": {
       "@utils/*": ["./utils/*"],
-      "@utils": ["./utils"]
+      "@utils": ["./utils"],
+      "@modules/*": ["./modules/*"],
+      "@modules": ["./modules"]
     },
     "baseUrl": "src",
     "strictNullChecks": true,

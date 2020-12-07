@@ -41,8 +41,14 @@ type ProxyPathSettings = {
   timeout: number,
 };
 
+type FullProxySettings = {
+  proxyPathSettingsList: Array<ProxyPathSettings>, 
+  proxyServerSettingsList: Array<ProxyServerSettings>,
+};
+
 export {
   ProxyServerSettings,
   ProxyPathSettings,
   ProxyPathMethod,
+  FullProxySettings,
 };

@@ -1,34 +1,36 @@
 import express from 'express';
 import HttpProxy from 'http-proxy';
-import fs from 'fs';
+import initMiddlewareList from '@modules';
+import readConfigData from '@utils/read-config-data';
 import { isDevelopment } from '@utils/environment';
 import { 
-  BeforeMiddleware,
- } from '@utils/types/middleware';
- import { 
   ProxyServerSettings,
   ProxyPathSettings,
- } from '@utils/types/proxy-settings';
+} from '@utils/types/proxy-settings';
+import { 
+  BeforeMiddleware,
+} from '@utils/types/middleware';
 
 const PORT: string = process.env.GATEWAY_NODE_PORT || '8080';
 const HEALTHCHECK_PATH: string = process.env.GATEWAY_HEALTHCHECK_PATH || '/x-gateway-healthcheck';
 const CONFIG_FILE_PATH: string = process.env.GATEWAY_NODE_CONFIG_FILE_PATH as string;
 
+// Initialization
+const configData = readConfigData(CONFIG_FILE_PATH);
 const app: express.Application = express();
 app.disable('etag');
 
-const beforeMiddlewareList: Array<BeforeMiddleware> = [];
+// Get middleware and register
+const beforeMiddlewareList: Array<BeforeMiddleware> = initMiddlewareList(configData);
 if (beforeMiddlewareList.length > 0) {
   app.use(...beforeMiddlewareList);
 }
 
-const rawConfigData: object = JSON.parse(fs.readFileSync(CONFIG_FILE_PATH, 'utf8') as string);
-
-const proxyServerSettingsList: Array<ProxyServerSettings> = rawConfigData['servers'].reverse();
-const proxyPathSettingsList: Array<ProxyPathSettings> = rawConfigData['paths'].reverse();
+const proxyServerSettingsList = configData['servers'] as Array<ProxyServerSettings>;
+const proxyPathSettingsList = configData['paths'] as Array<ProxyPathSettings>;
 const proxyServerMap: Map<string, HttpProxy> = new Map();
 
-proxyServerSettingsList.forEach((settings: ProxyServerSettings): void => {
+proxyServerSettingsList.reverse().forEach((settings: ProxyServerSettings): void => {
   const { serviceName, host, port } = settings;
   const proxy = HttpProxy.createProxyServer({
     target: {
@@ -43,7 +45,7 @@ proxyServerSettingsList.forEach((settings: ProxyServerSettings): void => {
   proxyServerMap.set(serviceName, proxy);
 });
 
-proxyPathSettingsList.forEach((settings: ProxyPathSettings): void => {
+proxyPathSettingsList.reverse().forEach((settings: ProxyPathSettings): void => {
   const { 
     serviceName, 
     path, 
