@@ -8,7 +8,6 @@ import {
  import { 
   ProxyServerSettings,
   ProxyPathSettings,
-  ProxyPathMethod,
  } from '@utils/types/proxy-settings';
 
 const PORT: string = process.env.GATEWAY_NODE_PORT || '8080';

@@ -236,9 +236,9 @@ sub vcl_backend_response {
   }
 
   # No caching, no grace - straight up
-  if ((bereq.method != "GET" && bereq.method != "HEAD") || beresp.ttl <= 0s || beresp.http.Set-Cookie || beresp.http.Vary == "*" || !(beresp.http.Cache-Control && beresp.http.Cache-Control ~ "max-age") || (beresp.http.Cache-Control && beresp.http.Cache-Control ~ "private|no-store")) {
+  if (beresp.ttl <= 0s || beresp.http.Set-Cookie || beresp.http.Vary == "*" || !(beresp.http.Cache-Control && beresp.http.Cache-Control ~ "max-age") || (beresp.http.Cache-Control && beresp.http.Cache-Control ~ "private|no-store")) {
     set beresp.grace = 0s;
-    set beresp.ttl = 0s;
+    set beresp.ttl = 120s;
     set beresp.uncacheable = true;
     return (deliver);
   }

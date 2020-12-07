@@ -16,10 +16,11 @@ const config = {
     { path: '/cached-route-1', cacheControlHeader: 'public' },
     { path: '/cached-route-2', cacheControlHeader: 'public, max-age=0' },
     { path: '/grace-mode-route', timeout: 100000, tries: 1, cacheControlHeader: 'public, max-age=1' },
-    { path: '/grace-not-needed', cacheControlHeader: 'public, max-age=1' }
+    { path: '/grace-not-needed', cacheControlHeader: 'public, max-age=1' },
+    { path: '/post-path', cacheControlHeader: 'public, max-age=1000', timeout: 700, tries: 0 }
   ],
   post: [
-    { path: '/post-path' }
+    { path: '/post-path', timeout: 700, tries: 0 }
   ]
 }
 

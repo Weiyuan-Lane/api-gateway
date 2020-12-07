@@ -52,7 +52,7 @@
       "serviceName": "test-service-1",
       "path": "/post-path",
       "timeout": 1000,
-      "methods": ["post"]
+      "methods": ["post", "get"]
     },
     {
       "serviceName": "test-service-1",
