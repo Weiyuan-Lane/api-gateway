@@ -12,7 +12,7 @@
       "@modules": ["./modules"]
     },
     "baseUrl": "src",
-    "strictNullChecks": true,
+    "strictNullChecks": true
   },
   "include": [
     "src/**/*.ts",
